@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using DevBlog.Data;
+using DevBlog.Services.MailService;
+using Microsoft.AspNetCore.Identity.UI.Services;
 namespace DevBlog
 {
     public class Program
@@ -15,7 +17,12 @@ namespace DevBlog
             builder.Services.AddDefaultIdentity<IdentityUser>(options => 
                 options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DevBlogContext>();
             builder.Services.AddControllersWithViews();
-
+            #region cấu hình MailSender
+            builder.Services.AddOptions();  // Kích hoạt Options, tự đọng tim cấu hình 
+            var mailSetting = builder.Configuration.GetSection("MailSetting");  // đọc config
+            builder.Services.Configure<MailSetting>(mailSetting); // map mailSetting vào MailSetting class
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            #endregion
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
