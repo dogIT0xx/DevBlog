@@ -17,6 +17,24 @@ namespace DevBlog
             builder.Services.AddDefaultIdentity<IdentityUser>(options => 
                 options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DevBlogContext>();
             builder.Services.AddControllersWithViews();
+
+            builder.Services
+                .AddAuthentication()
+                .AddCookie()
+                .AddGoogle(options =>
+                {
+                    var googleAuth = builder.Configuration.GetSection("GoogleAuth");
+                    options.ClientId = googleAuth["ClientId"];
+                    options.ClientSecret = googleAuth["ClientSecret"];
+                }
+                )
+                .AddFacebook(options =>
+                {
+                    var facebookAuth = builder.Configuration.GetSection("FacebookAuth");
+                    options.AppId = facebookAuth["AppId"];
+                    options.AppSecret = facebookAuth["AppSecret"];
+                });
+
             #region cấu hình MailSender
             builder.Services.AddOptions();  // Kích hoạt Options, tự đọng tim cấu hình 
             var mailSetting = builder.Configuration.GetSection("MailSetting");  // đọc config
