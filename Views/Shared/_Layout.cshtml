@@ -13,15 +13,14 @@
     <link rel="stylesheet" href="~/DevBlog.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Navigation-->
-    <partial name="Navbar" />
-
     <!-- Header-->
     <partial name="Header" />
 
     <!-- Main Content-->
-    <main class="container px-4 px-lg-5">
-        @RenderBody()
+    <main class="container px-4 px-lg-5 row mx-auto my-3">
+        <div class="col-9">@RenderBody()</div>
+        <aside class="col-3">
+        </aside>
     </main>
 
     <!-- Footer-->
