@@ -7,17 +7,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DevBlog.Data;
 using DevBlog.Entities;
-using DevBlog.Models.Post;
+using DevBlog.Areas.Admin.Models.Post;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using CloudinaryDotNet;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 
-namespace DevBlog.Controllers
+namespace DevBlog.Areas.Admin.Controllers
 {
+    [Area("Admin")]
+    [Authorize]
     public class PostController : Controller
     {
         private readonly DevBlogContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly ICloudinary _cloudinary;
 
-        public PostController(DevBlogContext context)
+        public PostController(DevBlogContext context, UserManager<IdentityUser>  userManager, ICloudinary cloudinary)
         {
             _context = context;
+            _userManager = userManager;
+            _cloudinary = cloudinary;
         }
 
         // GET: Post
@@ -74,6 +85,22 @@ namespace DevBlog.Controllers
                 UpdateAt = DateTime.Now,
                 Slug = createPostModel.Title.Trim().ToLower().Replace(" ", "-")
             };
+
+            // Xử lí url ảnh
+            if (createPostModel.ThumbnailFile != null)
+            {
+                var stream = createPostModel.ThumbnailFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(createPostModel.FileName, stream),
+                    Folder = "image",
+                    PublicId = Guid.NewGuid().ToString()
+                };
+
+                var result = await _cloudinary.UploadAsync(uploadParams);
+                // Set ThumbnailUrls
+                post.ThumbnailUrl = result.Url.ToString();
+            }
             _context.Add(post);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

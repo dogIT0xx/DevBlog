@@ -12,6 +12,9 @@ namespace DevBlog.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [Column(TypeName = "varchar(max)")]
+        public string ThumbnailUrl { get; set; }
+
         [ForeignKey(nameof(Author))]
         public string AuthorId { get; set; }
 
