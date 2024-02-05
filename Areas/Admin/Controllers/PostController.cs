@@ -24,7 +24,7 @@ namespace DevBlog.Areas.Admin.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ICloudinary _cloudinary;
 
-        public PostController(DevBlogContext context, UserManager<IdentityUser>  userManager, ICloudinary cloudinary)
+        public PostController(DevBlogContext context, UserManager<IdentityUser> userManager, ICloudinary cloudinary)
         {
             _context = context;
             _userManager = userManager;
@@ -90,16 +90,24 @@ namespace DevBlog.Areas.Admin.Controllers
             if (createPostModel.ThumbnailFile != null)
             {
                 var stream = createPostModel.ThumbnailFile.OpenReadStream();
+                Transformation[] listTrans = { 
+                    new Transformation()
+                            .Gravity("auto").Height(300).Width(400)
+                            .Crop("thumb").Chain().Crop("crop"),
+                   new Transformation()
+                            .Gravity("auto").Height(600).Width(800)
+                            .Crop("thumb").Chain().Crop("crop") };
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(createPostModel.FileName, stream),
                     Folder = "image",
-                    PublicId = Guid.NewGuid().ToString()
+                    PublicId = Guid.NewGuid().ToString(),
+                    EagerTransforms = new List<Transformation>(listTrans)
                 };
 
                 var result = await _cloudinary.UploadAsync(uploadParams);
                 // Set ThumbnailUrls
-                post.ThumbnailUrl = result.Url.ToString();
+                post.ThumbnailUrl = result.Eager[0].Uri.ToString();
             }
             _context.Add(post);
             await _context.SaveChangesAsync();

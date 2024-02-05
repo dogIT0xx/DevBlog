@@ -1,25 +1,34 @@
-﻿using DevBlog.Data;
-using DevBlog.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
+using DevBlog.Data;
+using DevBlog.Entities;
+using DevBlog.Areas.Admin.Models.Post;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using DevBlog.Models;
 using HtmlAgilityPack;
-using System.Net;
 using System.Web;
 
 namespace DevBlog.Controllers
 {
-    public class HomeController : Controller
+
+    public class PostController : Controller
     {
         private readonly DevBlogContext _context;
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger, DevBlogContext context)
+    
+        public PostController(DevBlogContext context)
         {
             _context = context;
-            _logger = logger;
         }
-    
+
+        // GET: Post
         public async Task<IActionResult> Index()
         {
             var postModels = await _context.Posts
@@ -49,15 +58,23 @@ namespace DevBlog.Controllers
             return htmlPTagNode.InnerText;
         }
 
-        public IActionResult Privacy()
+        // GET: Post/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            return View();
-        }
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var post = await _context.Posts
+                .Include(p => p.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
         }
     }
 }
