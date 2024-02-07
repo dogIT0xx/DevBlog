@@ -6,33 +6,26 @@ using System.Diagnostics;
 using HtmlAgilityPack;
 using System.Net;
 using System.Web;
+using DevBlog.Utils;
+using DevBlog.Repositories;
 
 namespace DevBlog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DevBlogContext _context;
+        private readonly IPostRepository _postRepository;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, DevBlogContext context)
+        public HomeController(ILogger<HomeController> logger, IPostRepository postRepository)
         {
-            _context = context;
+            _postRepository = postRepository;
             _logger = logger;
         }
     
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, string? searchString, string? sortName, string? sortOrder)
         {
-            var postModels = await _context.Posts
-                 .Select(post => new PostModel
-                 {
-                     Id = post.Id,
-                     Title = post.Title,
-                     ThumbnailUrl = post.ThumbnailUrl,
-                     PreviewContent = HandelPreviewContent(post.Content.ToString().Substring(0, 400))
-                 })
-                 .AsNoTracking()
-                 .ToListAsync();
-            return View(postModels);
+            var posts = await _postRepository.GetListAsync(pageNumber);
+            return View(posts);
         }
 
         // bỏ static bị lỗi, chưa tìm lí do

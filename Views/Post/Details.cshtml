@@ -1,0 +1,37 @@
+﻿@model DevBlog.Entities.Post
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div class="d-flex flex-column bg-white rounded shadow-lg p-5">
+    <div class="d-flex mb-2 flex-column">
+        <h2 class="mb-2 text-3xl font-bold text-uppercase">So sánh: kiến trúc stateful vs stateless</h2>
+
+        <ul class="d-flex justify-content-between mb-3 px-0 py-2" style="list-style:none">
+            <li>
+                <i class="fa-solid fa-tag"></i>
+                <a asp-controller="Post" asp-action="Category" class="text-decoration-none text-black-50">Tổng hợp</a>
+            </li>
+            <li>
+                <i class="fa-solid fa-clock"></i>
+                <a class="text-decoration-none text-sm text-black-50">@Html.DisplayFor(model => model.CreateAt)</a>
+            </li>
+            <li>
+                <i class="fa-solid fa-user"></i>
+                <a class="text-decoration-none text-sm text-black-50">@Html.DisplayFor(model => model.Author.UserName)</a>
+            </li>
+            <li>
+                <i class="fa-solid fa-pen"></i>
+                <span class="text-sm text-black-50">@Html.DisplayFor(model => model.UpdateAt)</span>
+            </li>
+        </ul>
+
+        <div class="d-block px-auto py-auto">
+            <img src="@Html.DisplayFor(model => model.ThumbnailUrl)" style="width:800px;height:600px;object-fit:contain" />
+        </div>
+    </div>
+    <hr />
+    <div>
+        @Html.Raw(Model.Content)
+    </div>
+</div>

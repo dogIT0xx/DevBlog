@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DevBlog.Models.PostModel>
+﻿@model DevBlog.Utils.PaginatedList<Post>
 
 <div class="row row-cols-1 row-cols-md-2 g-4">
     @foreach (var item in Model)
@@ -7,30 +7,51 @@
             <div class="card shadow-lg" style="height:550px">
                 <img src="@Html.DisplayFor(modelItem => item.ThumbnailUrl)" class="card-img-top" alt="Hollywood Sign on The Hill" height="300" width="400" />
                 <div class="card-body">
-                    <h5 class="card-title" style="height:45px;">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    <h5 class="card-title" style="height:45px;">
+                        <a class="text-decoration-none text-black" asp-controller="Post" asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                    </h5>
                     <p class="card-text my-3" style="height:100px; text-align:justify; overflow: hidden; word-spacing:2px;">
                         @* Xóa <p> </p> *@
-                        @Html.DisplayFor(modelItem => item.PreviewContent)
+                        @Html.DisplayFor(modelItem => item.Content)
                     </p>
-                    <a class="btn btn-dark mb-3">Code</a>
+                    <div class="d-flex justify-content-between mb-3" style="height:40px;">
+                        <a class="btn btn-dark " style="height:40px; width:64px;">@Html.DisplayFor(modelItem => item.Category.Title)</a>
+                        <a class="btn btn-outline-info" style="height:40px; width:110px;"> @Html.DisplayFor(modelItem => item.CreateAt.Year)-@Html.DisplayFor(modelItem => item.CreateAt.Month)-@Html.DisplayFor(modelItem => item.CreateAt.Day)</a>
+                    </div>
                 </div>
             </div>
         </div>
     }
 </div>
 
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
 <div class="d-flex mt-3 justify-content-center" aria-label="Page navigation example">
     <ul class="pagination">
         <li class="page-item">
-            <a class="page-link" href="#" aria-label="Previous">
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex - 1)"
+               class="page-link btn @prevDisabled">
+                Previous
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-            <a class="page-link" href="#" aria-label="Next">
+        <li class="page-item d-flex">
+        @{
+            for (int i = 1; i < Model.TotalPages+1; i++)
+            {
+                <a class="page-link" asp-route-pageNumber="@i")>@i</a>
+            }
+        }
+        </li>
+        <li>
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageIndex + 1)"
+               class="page-link btn @nextDisabled">
+                Next
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>

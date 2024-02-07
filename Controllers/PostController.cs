@@ -15,65 +15,46 @@ using CloudinaryDotNet.Actions;
 using DevBlog.Models;
 using HtmlAgilityPack;
 using System.Web;
+using DevBlog.Utils;
+using System.Drawing.Printing;
+using DevBlog.Repositories;
 
 namespace DevBlog.Controllers
 {
 
     public class PostController : Controller
     {
+        private readonly IPostRepository _postRepository;
         private readonly DevBlogContext _context;
-    
-        public PostController(DevBlogContext context)
+
+        public PostController(IPostRepository postRepository, DevBlogContext context)
         {
+            _postRepository = postRepository;
             _context = context;
         }
 
         // GET: Post
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? pageNumber, string? searchString, string? sortName, string? sortOrder)
         {
-            var postModels = await _context.Posts
-                 .Select(post => new PostModel
-                 {
-                     Id = post.Id,
-                     Title = post.Title,
-                     ThumbnailUrl = post.ThumbnailUrl,
-                     PreviewContent = HandelPreviewContent(post.Content.ToString().Substring(0, 400))
-                 })
-                 .AsNoTracking()
-                 .ToListAsync();
-            return View(postModels);
+            var posts = await _postRepository.GetListAsync(pageNumber);
+            return View(posts);
         }
 
-        // bỏ static bị lỗi, chưa tìm lí do
-        static private string HandelPreviewContent(string htmlEncode)
+
+        [Route("{controller}/{action}/{category}")]
+        public async Task<IActionResult> Category(string category, int? pageNumber)
         {
-            // Decode html từ database
-            var decodedContent = HttpUtility.HtmlDecode(htmlEncode);
-            var htmlDoc = new HtmlDocument();
-            // Load html từ decode
-            htmlDoc.LoadHtml(decodedContent);
-            // Chọn thẻ p tag
-            var htmlPTagNode = htmlDoc.DocumentNode.SelectSingleNode("//p");
-            // Lấy nội dung bên trong
-            return htmlPTagNode.InnerText;
+            return View();
         }
 
         // GET: Post/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
             {
                 return NotFound();
             }
-
             return View(post);
         }
     }

@@ -8,6 +8,7 @@ using CloudinaryDotNet.Actions;
 using CloudinaryDotNet;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Internal;
+using DevBlog.Repositories;
 
 namespace DevBlog
 {
@@ -59,6 +60,8 @@ namespace DevBlog
                 return new Cloudinary(account);
             });
             #endregion
+
+            builder.Services.AddTransient<IPostRepository, PostRepository>();
 
             var app = builder.Build();
 

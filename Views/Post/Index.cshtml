@@ -7,7 +7,9 @@
             <div class="card shadow-lg" style="height:550px">
                 <img src="@Html.DisplayFor(modelItem => item.ThumbnailUrl)" class="card-img-top" alt="Hollywood Sign on The Hill" height="300" width="400" />
                 <div class="card-body">
-                    <h5 class="card-title" style="height:45px;">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    <h5 class="card-title" style="height:45px;">
+                        <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Title)</a>
+                    </h5>
                     <p class="card-text my-3" style="height:100px; text-align:justify; overflow: hidden; word-spacing:2px;">
                         @* Xóa <p> </p> *@
                         @Html.DisplayFor(modelItem => item.PreviewContent)
