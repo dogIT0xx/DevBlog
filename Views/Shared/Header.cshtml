@@ -9,17 +9,17 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav mx-auto py-4 py-lg-0">
                     <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" asp-area="" asp-controller="Home" asp-action="Index">HOME</a></li>
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" href="post.html">CHUYỆN CODE</a></li>
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" href="post.html">CHUYỆN CUỘC SỐNG</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" asp-area="" asp-controller="Post" asp-action="Category" asp-route-category="Code">CHUYỆN CODE</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" asp-area="" asp-controller="Post" asp-action="Category" asp-route-category="Life">CHUYỆN CUỘC SỐNG</a></li>
                     <li class="nav-item"><a class="nav-link px-lg-3 py-1 py-lg-2 text-light" href="contact.html">ABOUT ME</a></li>
                 </ul>
 
-                <div class="input-group rounded w-auto mx-auto border border-light border-2">
-                    <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
-                    <span class="input-group-text border-0" id="search-addon">
+                <form class="input-group rounded w-auto mx-auto border border-light border-2" asp-area="" asp-controller="Post" asp-action="Index" asp-route-search="" method="get">
+                    <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" name="Search"/>
+                    <button type="submit" class="input-group-text border-0" id="search-addon">
                         <i class="fas fa-search"></i>
-                    </span>
-                </div>
+                    </button>
+                </form>
 
                 <partial name="_LoginPartial" />
             </div>

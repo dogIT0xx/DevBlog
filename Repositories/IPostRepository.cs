@@ -4,10 +4,11 @@ namespace DevBlog.Repositories
 {
     public interface IPostRepository
     {
-        Task<List<Post>> GetListAsync(int? pageIndex);
-        Task<List<Post>> GetListByCategoryIdAsync(int categoryId, int? pageIndex);
+        Task<List<Post>> GetListAsync(string? search, int? pageIndex);
+        Task<List<Post>> GetListByCategoryAsync(string? category, int? pageIndex);
+        Task<List<Post>> Get5LastPostsAsync();
         Task<Post> GetByIdAsync(int id);
-        Task DeleteleByIdAsync(int id);
-        Task<bool> EditAsync(int id, Post post);
+        Task<int> DeleteleByIdAsync(int id);
+        Task<int> EditAsync(Post post);
     }
 }

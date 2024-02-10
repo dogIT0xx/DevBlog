@@ -20,7 +20,7 @@
     <!-- Main Content-->
     <main class="container px-4 px-lg-5 row mx-auto my-3">
         <div class="col-9">@RenderBody()</div>
-        <Partial name="Aside" /> 
+        @await Component.InvokeAsync("Aside");
     </main>
 
     <!-- Footer-->

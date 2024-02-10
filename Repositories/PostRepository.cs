@@ -18,14 +18,24 @@ namespace DevBlog.Repositories
             _context = context;
         }
 
-        public Task DeleteleByIdAsync(int id)
+        public async Task<int> DeleteleByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var post = await _context.Posts.FindAsync(id);
+            if (post != null)
+            {
+                _context.Posts.Remove(post);
+            }
+            return await _context.SaveChangesAsync();
         }
 
-        public Task<bool> EditAsync(int id, Post post)
+        public async Task<int> EditAsync(Post post)
         {
-            throw new NotImplementedException();
+            var oldPost = await _context.Posts.FindAsync(post.Id);
+            if (oldPost != null)
+            {
+                _context.Update(post);
+            }
+            return await _context.SaveChangesAsync();
         }
 
         // Chưa tối ưu query
@@ -38,28 +48,7 @@ namespace DevBlog.Repositories
             return post;
         }
 
-        public async Task<List<Post>> GetListByCategoryIdAsync(int categoryId, int? pageIndex)
-        {
-            var queryable = _context.Posts
-                .Select(post => new Post
-                {
-                    Id = post.Id,
-                    Title = post.Title,
-                    ThumbnailUrl = post.ThumbnailUrl,
-                    Content = HandelPreviewContent(post.Content.ToString().Substring(0, 400)),
-                    Category = post.Category,
-                    CreateAt = post.CreateAt
-                })
-                .Where(post => post.Category.Id == categoryId)
-                .AsNoTracking();
-
-            var pageSize = 4;
-            var listPageinated = await PaginatedList<Post>.CreateAsync(queryable, pageIndex ?? 1, pageSize);
-
-            return listPageinated;
-        }
-
-        public async Task<List<Post>> GetListAsync(int? pageIndex)
+        public async Task<List<Post>> GetListAsync(string? search, int? pageIndex)
         {
             var queryable = _context.Posts
             .Select(post => new Post
@@ -72,11 +61,52 @@ namespace DevBlog.Repositories
                 CreateAt = post.CreateAt
             })
             .AsNoTracking();
+            if (search != null)
+            {
+                queryable = queryable.Where(post => post.Title.Contains(search) || 
+                    post.Category!.Title.Contains(search));
+            }
 
             var pageSize = 4;
             var listPageinated = await PaginatedList<Post>.CreateAsync(queryable, pageIndex ?? 1, pageSize);
 
             return listPageinated;
+        }
+
+        public async Task<List<Post>> GetListByCategoryAsync(string? category, int? pageIndex)
+        {
+            var queryable = _context.Posts
+            .Select(post => new Post
+            {
+                Id = post.Id,
+                Title = post.Title,
+                ThumbnailUrl = post.ThumbnailUrl,
+                Content = HandelPreviewContent(post.Content.ToString().Substring(0, 400)),
+                Category = post.Category,
+                CreateAt = post.CreateAt
+            })
+            .Where(post => post.Category!.Title == category)
+            .AsNoTracking();
+
+            var pageSize = 4;
+            var listPageinated = await PaginatedList<Post>.CreateAsync(queryable, pageIndex ?? 1, pageSize);
+
+            return listPageinated;
+        }
+
+        public async Task<List<Post>> Get5LastPostsAsync()
+        {
+            var posts = await _context.Posts
+            .Select(post => new Post
+            {
+                Id = post.Id,
+                Title = post.Title,
+                ThumbnailUrl = post.ThumbnailUrl
+            })
+            .AsNoTracking()
+            .Take(5)
+            .ToListAsync();
+            return posts;
         }
 
         // bỏ static bị lỗi, chưa tìm lí do

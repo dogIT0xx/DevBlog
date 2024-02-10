@@ -34,17 +34,17 @@ namespace DevBlog.Controllers
         }
 
         // GET: Post
-        public async Task<IActionResult> Index(int? pageNumber, string? searchString, string? sortName, string? sortOrder)
+        public async Task<IActionResult> Index(string? search, int? pageNumber, string? sortName, string? sortOrder)
         {
-            var posts = await _postRepository.GetListAsync(pageNumber);
+            var posts = await _postRepository.GetListAsync(search, pageNumber);
             return View(posts);
         }
 
-
         [Route("{controller}/{action}/{category}")]
-        public async Task<IActionResult> Category(string category, int? pageNumber)
+        public async Task<IActionResult> Category(string? category, int? pageNumber, string? sortName, string? sortOrder)
         {
-            return View();
+            var posts = await _postRepository.GetListByCategoryAsync(category, pageNumber);
+            return View(nameof(Index), posts);
         }
 
         // GET: Post/Details/5
